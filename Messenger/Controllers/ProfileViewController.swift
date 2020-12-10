@@ -41,7 +41,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let actionSheet = UIAlertController(title: "Log out?",
-                                            message: "",
+                                            message: "By clicking Log out you'll be logged out",
                                             preferredStyle: .actionSheet)
         
         actionSheet.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] _ in

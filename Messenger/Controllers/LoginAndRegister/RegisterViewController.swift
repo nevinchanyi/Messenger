@@ -24,7 +24,7 @@ class RegisterViewController: UIViewController {
         imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 2
-        imageView.layer.borderColor = UIColor.systemPink.cgColor
+        imageView.layer.borderColor = UIColor.gray.cgColor
         return imageView
     }()
     
@@ -36,12 +36,14 @@ class RegisterViewController: UIViewController {
         field.layer.cornerRadius = 12
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
-        field.placeholder = "Your Email Address"
+        field.attributedPlaceholder = NSAttributedString(string: "Your Email Address",
+                                                         attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
         // fix the buffer of text in text field
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
+        field.textColor = .black
         return field
     }()
     
@@ -53,11 +55,13 @@ class RegisterViewController: UIViewController {
         field.layer.cornerRadius = 12
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
-        field.placeholder = "Your Password"
+        field.attributedPlaceholder = NSAttributedString(string: "Your Password",
+                                                         attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0)) // fix the buffer of text in text field
         field.leftViewMode = .always
         field.backgroundColor = .white
         field.isSecureTextEntry = true
+        field.textColor = .black
         return field
     }()
     
@@ -69,12 +73,14 @@ class RegisterViewController: UIViewController {
         field.layer.cornerRadius = 12
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
-        field.placeholder = "Your First Name"
+        field.attributedPlaceholder = NSAttributedString(string: "Your First Name",
+                                                         attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
         // fix the buffer of text in text field
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
+        field.textColor = .black
         return field
     }()
     
@@ -86,12 +92,14 @@ class RegisterViewController: UIViewController {
         field.layer.cornerRadius = 12
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
-        field.placeholder = "Your Last Name"
+        field.attributedPlaceholder = NSAttributedString(string: "Your Last Name",
+                                                         attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
         // fix the buffer of text in text field
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
+        field.textColor = .black
         return field
     }()
     

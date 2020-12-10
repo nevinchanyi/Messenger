@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FBSDKLoginKit
 
 class LoginViewController: UIViewController {
     
@@ -31,12 +32,14 @@ class LoginViewController: UIViewController {
         field.layer.cornerRadius = 12
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
-        field.placeholder = "Your Email Address"
+        field.attributedPlaceholder = NSAttributedString(string: "Your Email Address",
+                                                         attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         
         // fix the buffer of text in text field
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
         field.leftViewMode = .always
         field.backgroundColor = .white
+        field.textColor = .black
         return field
     }()
     
@@ -48,11 +51,13 @@ class LoginViewController: UIViewController {
         field.layer.cornerRadius = 12
         field.layer.borderWidth = 1
         field.layer.borderColor = UIColor.lightGray.cgColor
-        field.placeholder = "Your Password"
+        field.attributedPlaceholder = NSAttributedString(string: "Your Password",
+                                                         attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0)) // fix the buffer of text in text field
         field.leftViewMode = .always
         field.backgroundColor = .white
         field.isSecureTextEntry = true
+        field.textColor = .black
         return field
     }()
     
@@ -64,6 +69,12 @@ class LoginViewController: UIViewController {
         button.layer.cornerRadius = 12
         button.layer.masksToBounds = true
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        return button
+    }()
+    
+    private let facebookLoginButton: FBLoginButton = {
+        let button = FBLoginButton()
+        button.permissions = ["email","public_profile"]
         return button
     }()
     
@@ -80,6 +91,7 @@ class LoginViewController: UIViewController {
         
         emailField.delegate = self
         passwordField.delegate = self
+        facebookLoginButton.delegate = self
         
         //MARK: ADD SUBVIEWS
         view.addSubview(scrollView)
@@ -87,6 +99,7 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(emailField)
         scrollView.addSubview(passwordField)
         scrollView.addSubview(loginButton)
+        scrollView.addSubview(facebookLoginButton)
     }
     
     override func viewDidLayoutSubviews() {
@@ -109,6 +122,10 @@ class LoginViewController: UIViewController {
                                    y: passwordField.bottom + 20,
                                    width: scrollView.width - 60,
                                    height: 52)
+        facebookLoginButton.frame = CGRect (x: 30,
+                                      y: loginButton.bottom + 20,
+                                      width: scrollView.width - 60,
+                                      height: 52)
     }
     
     @objc private func loginButtonTapped() {
@@ -161,5 +178,37 @@ extension LoginViewController: UITextFieldDelegate {
         
         return true
     }
+    
+}
+
+extension LoginViewController: LoginButtonDelegate {
+    
+    func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
+        // nothing to do here probably..
+    }
+    
+    
+    func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        guard let token = result?.token?.tokenString else {
+            print("### User failed to log in with Facebook")
+            return
+        }
+        let credential = FacebookAuthProvider.credential(withAccessToken: token)
+        
+        FirebaseAuth.Auth.auth().signIn(with: credential) { [weak self] authResult, error in
+            guard let strongSelf = self else { return }
+            
+            guard authResult != nil, error == nil else {
+                if let error = error {
+                    print("### Facebook credential login failed, MFA may be needed: \(error.localizedDescription)")
+                }
+                
+                return
+            }
+            print("### Successfully logged user in")
+            strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+        }
+    }
+    
     
 }
