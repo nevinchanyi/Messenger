@@ -230,10 +230,28 @@ class RegisterViewController: UIViewController {
                     print("### ERROR: Can't create an user")
                     return
                 }
-                
-                DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName,
-                                                                    lastName: lastName,
-                                                                    emailAddress: email))
+                let chatUser = ChatAppUser(firstName: firstName,
+                                           lastName: lastName,
+                                           emailAddress: email)
+                DatabaseManager.shared.insertUser(with: chatUser) { success in
+                    if success {
+                        // upload image
+                        guard let image = strongSelf.imageView.image,
+                              let data = image.pngData() else {
+                            return
+                        }
+                        let fileName = chatUser.profilePictureFileName
+                        StorageManager.shared.uploadProfilePicture(with: data, fileName: fileName) { results in
+                            switch results {
+                            case .success(let downloadURL):
+                                UserDefaults.standard.set(downloadURL, forKey: "profilePictureURL")
+                                print(downloadURL)
+                            case .failure(let error):
+                                print("### Storage manager error: \(error)")
+                            }
+                        }
+                    }
+                }
                 
                 strongSelf.dismiss(animated: true, completion: nil)
             }
@@ -241,7 +259,6 @@ class RegisterViewController: UIViewController {
         
         
     }
-    
     
     @objc private func didTapChangeProfilePic() {
         print("Image did tapped")
