@@ -228,7 +228,7 @@ extension LoginViewController: LoginButtonDelegate {
         }
         
         let facebookRequest = FBSDKLoginKit.GraphRequest(graphPath: "me",
-                                                         parameters: ["fields" : "email, name"],
+                                                         parameters: ["fields" : "email, fist_name, last_name, picture.type(large)"],
                                                          tokenString: token,
                                                          version: nil,
                                                          httpMethod: .get)
@@ -240,26 +240,34 @@ extension LoginViewController: LoginButtonDelegate {
             
             print("### Result: \(result)")
             
-            guard let userName = result["name"] as? String,
-                  let email = result["email"] as? String else {
+            
+            guard let firstName = result["first_name"] as? String,
+                  let lastName = result["last_name"] as? String,
+                  let email = result["email"] as? String,
+                  let picture = result["picture"] as? [String: Any],
+                  let data = picture["data"] as? [String: Any],
+                  let pictureURL = data["url"] as? String else {
                 print("### Failed to take a name and an email of user")
                 return
             }
             
-            let nameComponents = userName.components(separatedBy: " ")
-            guard nameComponents.count == 2 else { return }
-            
-            let firstName = nameComponents[0]
-            let lastName = nameComponents[1]
             
             DatabaseManager.shared.userExists(with: email) { (exists) in
                 if !exists {
+
                     let chatUser = ChatAppUser(firstName: firstName,
                                                lastName: lastName,
                                                emailAddress: email)
                     DatabaseManager.shared.insertUser(with: chatUser) { success in
                         if success {
                             // upload image
+                            guard let url = URL(string: pictureURL) else { return }
+                            
+                            URLSession.shared.dataTask(with: url) { (data, _, _) in
+                                guard let data = data else { return }
+                            }
+                            
+
                         }
                     }
                 }
