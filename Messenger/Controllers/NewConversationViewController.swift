@@ -10,7 +10,10 @@ import JGProgressHUD
 
 class NewConversationViewController: UIViewController {
     
-    private let spinner = JGProgressHUD()
+    private let spinner = JGProgressHUD(style: .dark)
+    
+    private var users = [[String: String]]()
+    private var hasFetched = false
     
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -54,6 +57,21 @@ class NewConversationViewController: UIViewController {
 
 extension NewConversationViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text, !text.replacingOccurrences(of: " ", with: "").isEmpty else {
+            return
+        }
         
+        spinner.show(in: view)
+        
+        self.searchUsers(query: text)
+    }
+    
+    func searchUsers(query: String) {
+        // check if array has firebase results
+        if hasFetched {
+            // if it does: filter
+        } else {
+            // if it's not, fetched the filter
+        }
     }
 }
