@@ -62,7 +62,10 @@ extension DatabaseManager {
                     usersCollection.append(newElement)
                     
                     self.database.child("users").setValue(usersCollection) { (error, _) in
-                        guard error == nil else { return }
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
                         completion(true)
                     }
                     
@@ -76,7 +79,10 @@ extension DatabaseManager {
                         ]
                     ]
                     self.database.child("users").setValue(newCollection) { (error, _) in
-                        guard error == nil else { return }
+                        guard error == nil else {
+                            completion(false)
+                            return
+                        }
                         completion(true)
                     }
                 }
